@@ -2,46 +2,51 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="utf-8">
-    <title>Worship Slides</title>
-    <link rel="stylesheet" href="https://jsdelivr.net">
-    <link rel="stylesheet" href="https://jsdelivr.net">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worship - May 17</title>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <!-- Black Theme -->
+    <link rel="stylesheet" href="https://cloudflare.com">
     <style>
-        .reveal .slides section { font-size: 1.8em; font-weight: bold; line-height: 1.8; }
-        .title-slide { color: #ffd700; font-size: 2.2em !important; }
+        .reveal .slides section { font-size: 1.6em; font-weight: bold; line-height: 1.6; }
+        .song-title { color: #ffd700 !important; font-size: 2em !important; }
     </style>
 </head>
 <body>
     <div class="reveal">
         <div class="slides">
-            <!-- Song 1: 讚美之泉 -->
-            <section class="title-slide">讚美之泉</section>
+            <!-- Song 1 -->
+            <section class="song-title">讚美之泉</section>
             <section>從天父而來的愛和恩典，<br>把我們冰冷的心溶解，</section>
             <section>讓我們獻出每個音符，<br>把它化為讚美之泉。</section>
             <section>讓我們張開口，舉起手，<br>向永生之主稱謝，</section>
             <section>使讚美之泉流入，<br>每個人的心間。</section>
 
-            <!-- Song 2: 有一位神 -->
-            <section class="title-slide">有一位神</section>
+            <!-- Song 2 -->
+            <section class="song-title">有一位神</section>
             <section>有一位神，有權能創造宇宙萬物<br>也有溫柔雙手安慰受傷靈魂</section>
             <section>有一位神，有權柄審判一切罪惡<br>也有慈悲體貼人的軟弱</section>
             <section>有一位神，我們的神<br>唯一的神，名叫耶和華</section>
             <section>有權威榮光，有恩典慈愛<br>是昔在今在永在的神</section>
-            <section>有一位神，有權能創造宇宙萬物<br>也有溫柔雙手安慰受傷靈魂</section>
-            <section>有一位神，高坐在榮耀的寶座<br>卻死在十架挽救人墮落</section>
-            <section>有一位神，我們的神<br>唯一的神，名叫耶和華</section>
-            <section>有權威榮光，有恩典慈愛<br>是昔在今在永在的神</section>
+            <!-- More slides as needed -->
         </div>
     </div>
 
-    <script src="https://jsdelivr.net"></script>
+    <!-- Core JS -->
+    <script src="https://cloudflare.com"></script>
     <script>
-        Reveal.initialize({
-            hash: true,
-            transition: 'fade', // Simple, clean transition
-            transitionSpeed: 'slow',
-            autoSlide: 6000,    // Moves every 6 seconds, can be paused with 'f'
-            loop: true,
-            center: true
+        // Force initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            Reveal.initialize({
+                hash: true,
+                transition: 'fade',
+                center: true,
+                // Help for projectors:
+                width: 1200,
+                height: 700,
+                margin: 0.1
+            });
         });
     </script>
 </body>
