@@ -48,6 +48,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/markdown/marked.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/markdown/markdown.js"></script>
   <script>
     (function () {
@@ -70,6 +71,14 @@
         return null;
       }
 
+      function showError(message) {
+        var empty = document.getElementById("emptyState");
+        empty.innerHTML = "<div><h1>Unable to load deck</h1><p>" +
+          (message || "Please reopen preview from Deck Builder.") +
+          "</p></div>";
+        empty.style.display = "flex";
+      }
+
       function applyDeck(deck) {
         var markdown = document.getElementById("deckMarkdown");
         var themeLink = document.getElementById("themeLink");
@@ -89,17 +98,26 @@
 
         deckRoot.style.display = "block";
 
-        Reveal.initialize({
-          plugins: [RevealMarkdown],
-          transition: "fade",
-          center: true,
-          hash: true
-        });
+        try {
+          if (typeof Reveal === "undefined" || typeof RevealMarkdown === "undefined") {
+            throw new Error("Reveal.js markdown dependencies failed to load.");
+          }
+
+          Reveal.initialize({
+            plugins: [RevealMarkdown],
+            transition: "fade",
+            center: true,
+            hash: true
+          });
+        } catch (err) {
+          deckRoot.style.display = "none";
+          showError((err && err.message) ? err.message : "Unknown slideshow runtime error.");
+        }
       }
 
       var deck = readDeckFromParams();
       if (!deck) {
-        document.getElementById("emptyState").style.display = "flex";
+        showError("Open this page from Deck Builder preview, or pass ?data=... in the URL.");
         return;
       }
 
