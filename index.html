@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Deck Builder</title>
+  <style>
+    :root {
+      --bg-1: #f8f6f2;
+      --bg-2: #efe9dc;
+      --ink: #1f2a37;
+      --muted: #5b677a;
+      --card: #ffffff;
+      --line: #d8d3c8;
+      --accent: #0f766e;
+      --accent-2: #115e59;
+      --danger: #b42318;
+      --radius: 14px;
+      --shadow: 0 14px 30px rgba(31, 42, 55, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
+      background:
+        radial-gradient(1100px 520px at -5% -10%, #e9f6f4 0%, transparent 55%),
+        radial-gradient(1000px 480px at 120% 10%, #f2e7d5 0%, transparent 60%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 30px 20px 40px;
+    }
+
+    .hero {
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 36px;
+      letter-spacing: 0.3px;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      max-width: 800px;
+    }
+
+    .project-chip {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .project-controls {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: minmax(160px, 220px) minmax(180px, 260px) auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .card h2 {
+      margin: 4px 0 12px;
+      font-size: 18px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 6px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 380px;
+      resize: vertical;
+      font-family: "Menlo", "Consolas", monospace;
+      line-height: 1.5;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn-row {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 9px 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: transform 120ms ease, background-color 120ms ease;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .primary:hover {
+      background: var(--accent-2);
+    }
+
+    .secondary {
+      border-color: var(--line);
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .danger {
+      border-color: #f0d5d1;
+      background: #fff4f2;
+      color: var(--danger);
+    }
+
+    .list {
+      display: grid;
+      gap: 8px;
+      max-height: 300px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .deck-item {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      background: #fff;
+      cursor: pointer;
+      display: grid;
+      gap: 4px;
+    }
+
+    .deck-item.active {
+      border-color: var(--accent);
+      background: #f2fbf9;
+    }
+
+    .deck-item strong {
+      font-size: 14px;
+    }
+
+    .deck-item small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .flash {
+      min-height: 20px;
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--accent-2);
+    }
+
+    .help {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .choice-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr 1fr;
+      margin-top: 8px;
+    }
+
+    .choice {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      background: #fffcf8;
+    }
+
+    .choice h3 {
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+
+    .choice p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .project-controls {
+        grid-template-columns: 1fr;
+      }
+
+      .choice-grid {
+        grid-template-columns: 1fr;
+      }
+
+      textarea {
+        min-height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>Deck Builder</h1>
+      <p>Create lyric and message decks, preview in Reveal.js, and export a standalone HTML file for GitHub Pages.</p>
+      <div class="project-chip" id="projectChip"></div>
+      <div class="project-controls">
+        <select id="projectSelect" aria-label="Select project"></select>
+        <input id="newProjectInput" type="text" placeholder="new project key, e.g. youth-aug">
+        <button id="switchProjectBtn" class="secondary">Open Project</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="card full">
+        <h2>How Friends Can Use This</h2>
+        <div class="choice-grid">
+          <article class="choice">
+            <h3>Option A: Use Your Hosted Repo</h3>
+            <p>Share your builder URL. They create decks inside your hosted page and export standalone slideshow files when needed.</p>
+          </article>
+          <article class="choice">
+            <h3>Option B: Host on Their Own Repo</h3>
+            <p>They copy index.html and slideshow.html into their own GitHub repo, enable Pages, then manage their own decks privately.</p>
+          </article>
+        </div>
+        <p class="help">Both options are no-backend. For large decks, use Download Standalone HTML instead of long share links.</p>
+      </section>
+
+      <section class="card">
+        <h2>Your Decks</h2>
+        <div class="btn-row">
+          <button id="newDeckBtn" class="primary">New Deck</button>
+          <button id="duplicateDeckBtn" class="secondary">Duplicate</button>
+          <button id="deleteDeckBtn" class="danger">Delete</button>
+        </div>
+        <p class="muted">Everything is saved in this browser (local storage).</p>
+        <div id="deckList" class="list"></div>
+      </section>
+
+      <section class="card">
+        <h2>Editor</h2>
+
+        <label for="title">Deck Title</label>
+        <input id="title" type="text" placeholder="Sunday Worship">
+
+        <div class="row">
+          <div>
+            <label for="theme">Theme</label>
+            <select id="theme">
+              <option value="night">Night</option>
+              <option value="black">Black</option>
+              <option value="white">White</option>
+              <option value="league">League</option>
+              <option value="beige">Beige</option>
+              <option value="sky">Sky</option>
+              <option value="moon">Moon</option>
+              <option value="solarized">Solarized</option>
+              <option value="simple">Simple</option>
+              <option value="dracula">Dracula</option>
+              <option value="serif">Serif</option>
+              <option value="blood">Blood</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="fontSize">Font Size (px)</label>
+            <input id="fontSize" type="number" min="24" max="140" value="60">
+          </div>
+        </div>
+
+        <label for="markdown">Slides Markdown</label>
+        <textarea id="markdown" placeholder="# Slide 1&#10;Line one&#10;---&#10;# Slide 2&#10;Another line"></textarea>
+
+        <div class="btn-row">
+          <button id="saveBtn" class="primary">Save</button>
+          <button id="previewBtn" class="secondary">Preview</button>
+          <button id="shareLinkBtn" class="secondary">Copy Share Link</button>
+          <button id="downloadBtn" class="secondary">Download Standalone HTML</button>
+        </div>
+
+        <div id="flash" class="flash"></div>
+        <p class="help">
+          Tip: Separate slides with --- on its own line. You can use markdown headings and line breaks.
+        </p>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var STORAGE_PREFIX = "deck_builder_v1";
+      var currentDeckId = null;
+      var deckList = document.getElementById("deckList");
+      var flash = document.getElementById("flash");
+      var projectChip = document.getElementById("projectChip");
+      var projectSelect = document.getElementById("projectSelect");
+      var newProjectInput = document.getElementById("newProjectInput");
+      var switchProjectBtn = document.getElementById("switchProjectBtn");
+
+      var projectKey = getProjectKey();
+      var STORAGE_KEY = STORAGE_PREFIX + "__" + projectKey;
+
+      projectChip.textContent = "Project: " + projectKey + " (change via ?project=your-name)";
+
+      var titleInput = document.getElementById("title");
+      var themeInput = document.getElementById("theme");
+      var fontSizeInput = document.getElementById("fontSize");
+      var markdownInput = document.getElementById("markdown");
+
+      function sanitizeProjectKey(raw) {
+        var input = (raw || "").trim().toLowerCase();
+        var clean = input.replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-+|-+$/g, "");
+        return clean || "main";
+      }
+
+      function getProjectKey() {
+        var params = new URLSearchParams(window.location.search);
+        return sanitizeProjectKey(params.get("project") || "main");
+      }
+
+      function buildProjectUrl(key) {
+        var url = new URL(window.location.href);
+        url.searchParams.set("project", sanitizeProjectKey(key));
+        return url.toString();
+      }
+
+      function listKnownProjects() {
+        var keys = [];
+        for (var i = 0; i < localStorage.length; i++) {
+          var key = localStorage.key(i);
+          if (!key || key.indexOf(STORAGE_PREFIX + "__") !== 0) {
+            continue;
+          }
+          keys.push(key.slice((STORAGE_PREFIX + "__").length));
+        }
+
+        if (keys.indexOf(projectKey) === -1) {
+          keys.push(projectKey);
+        }
+
+        return keys
+          .filter(Boolean)
+          .map(sanitizeProjectKey)
+          .filter(function (value, index, arr) { return arr.indexOf(value) === index; })
+          .sort();
+      }
+
+      function renderProjectPicker() {
+        var projects = listKnownProjects();
+        projectSelect.innerHTML = "";
+
+        projects.forEach(function (key) {
+          var option = document.createElement("option");
+          option.value = key;
+          option.textContent = key;
+          if (key === projectKey) {
+            option.selected = true;
+          }
+          projectSelect.appendChild(option);
+        });
+      }
+
+      function uid() {
+        return "d_" + Math.random().toString(36).slice(2, 10);
+      }
+
+      function nowIso() {
+        return new Date().toISOString();
+      }
+
+      function defaultMarkdown() {
+        return [
+          "# Welcome",
+          "Your first slide",
+          "---",
+          "# Next",
+          "Add your own text"
+        ].join("\n");
+      }
+
+      function loadState() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) {
+            return { decks: [], lastDeckId: null };
+          }
+          var parsed = JSON.parse(raw);
+          if (!parsed || !Array.isArray(parsed.decks)) {
+            return { decks: [], lastDeckId: null };
+          }
+          return parsed;
+        } catch (err) {
+          return { decks: [], lastDeckId: null };
+        }
+      }
+
+      function saveState(state) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function findDeck(state, id) {
+        return state.decks.find(function (d) { return d.id === id; }) || null;
+      }
+
+      function setFlash(msg, isError) {
+        flash.textContent = msg || "";
+        flash.style.color = isError ? "#b42318" : "#115e59";
+      }
+
+      function escapeTextareaClose(s) {
+        return s.replace(/<\/textarea>/gi, "<\\/textarea>");
+      }
+
+      function encodeDeck(deck) {
+        var json = JSON.stringify(deck);
+        return btoa(unescape(encodeURIComponent(json)));
+      }
+
+      function renderDeckList(state) {
+        deckList.innerHTML = "";
+
+        if (!state.decks.length) {
+          var empty = document.createElement("p");
+          empty.className = "muted";
+          empty.textContent = "No decks yet. Click New Deck.";
+          deckList.appendChild(empty);
+          return;
+        }
+
+        state.decks
+          .slice()
+          .sort(function (a, b) { return b.updatedAt.localeCompare(a.updatedAt); })
+          .forEach(function (deck) {
+            var item = document.createElement("button");
+            item.type = "button";
+            item.className = "deck-item" + (deck.id === currentDeckId ? " active" : "");
+            item.innerHTML = "<strong>" + escapeHtml(deck.title || "Untitled Deck") + "</strong>" +
+              "<small>Updated: " + escapeHtml(deck.updatedAt.slice(0, 16).replace("T", " ")) + "</small>";
+            item.addEventListener("click", function () {
+              currentDeckId = deck.id;
+              state.lastDeckId = deck.id;
+              saveState(state);
+              renderEditor(state);
+              renderDeckList(state);
+            });
+            deckList.appendChild(item);
+          });
+      }
+
+      function escapeHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function renderEditor(state) {
+        var deck = findDeck(state, currentDeckId);
+        if (!deck) {
+          titleInput.value = "";
+          themeInput.value = "night";
+          fontSizeInput.value = 60;
+          markdownInput.value = "";
+          return;
+        }
+
+        titleInput.value = deck.title || "";
+        themeInput.value = deck.theme || "night";
+        fontSizeInput.value = deck.fontSize || 60;
+        markdownInput.value = deck.markdown || "";
+      }
+
+      function ensureDeckSelected(state) {
+        if (currentDeckId && findDeck(state, currentDeckId)) {
+          return true;
+        }
+
+        if (state.decks[0]) {
+          currentDeckId = state.decks[0].id;
+          state.lastDeckId = currentDeckId;
+          saveState(state);
+          return true;
+        }
+
+        return false;
+      }
+
+      function collectDeckFromForm() {
+        return {
+          title: (titleInput.value || "").trim(),
+          theme: themeInput.value || "night",
+          fontSize: Number(fontSizeInput.value) || 60,
+          markdown: markdownInput.value || ""
+        };
+      }
+
+      function createDeck(state, fromDeck) {
+        var base = fromDeck || {
+          title: "New Deck",
+          theme: "night",
+          fontSize: 60,
+          markdown: defaultMarkdown()
+        };
+
+        var deck = {
+          id: uid(),
+          title: base.title || "New Deck",
+          theme: base.theme || "night",
+          fontSize: base.fontSize || 60,
+          markdown: base.markdown || defaultMarkdown(),
+          updatedAt: nowIso()
+        };
+
+        state.decks.push(deck);
+        currentDeckId = deck.id;
+        state.lastDeckId = deck.id;
+        saveState(state);
+        renderDeckList(state);
+        renderEditor(state);
+      }
+
+      function saveCurrentDeck(state) {
+        if (!ensureDeckSelected(state)) {
+          setFlash("Create a deck first.", true);
+          return null;
+        }
+
+        var deck = findDeck(state, currentDeckId);
+        var form = collectDeckFromForm();
+
+        deck.title = form.title || "Untitled Deck";
+        deck.theme = form.theme;
+        deck.fontSize = Math.max(24, Math.min(140, form.fontSize));
+        deck.markdown = form.markdown;
+        deck.updatedAt = nowIso();
+
+        saveState(state);
+        renderDeckList(state);
+        setFlash("Saved.", false);
+        return deck;
+      }
+
+      function previewDeck(deck) {
+        var url = "slideshow.html?project=" + encodeURIComponent(projectKey) +
+          "&data=" + encodeURIComponent(encodeDeck(deck));
+        window.open(url, "_blank", "noopener,noreferrer");
+      }
+
+      function buildStandaloneHtml(deck) {
+        var safeTitle = escapeHtml(deck.title || "Deck");
+        var markdown = escapeTextareaClose(deck.markdown || "");
+        var fontSize = Math.max(24, Math.min(140, Number(deck.fontSize) || 60));
+        var theme = deck.theme || "night";
+
+        return "<!doctype html>\n" +
+"<html lang=\"en\">\n" +
+"<head>\n" +
+"  <meta charset=\"utf-8\">\n" +
+"  <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n" +
+"  <title>" + safeTitle + "</title>\n" +
+"  <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css\">\n" +
+"  <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/" + theme + ".css\">\n" +
+"  <style>\n" +
+"    .reveal .slides { font-size: " + fontSize + "px !important; text-align: center; }\n" +
+"  </style>\n" +
+"</head>\n" +
+"<body>\n" +
+"  <div class=\"reveal\">\n" +
+"    <div class=\"slides\">\n" +
+"      <section data-markdown>\n" +
+"        <textarea data-template>\n" + markdown + "\n" +
+"        </textarea>\n" +
+"      </section>\n" +
+"    </div>\n" +
+"  </div>\n" +
+"  <script src=\"https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js\"></" + "script>\n" +
+"  <script src=\"https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/markdown/markdown.js\"></" + "script>\n" +
+"  <script>\n" +
+"    Reveal.initialize({ plugins: [RevealMarkdown], transition: \"fade\", center: true });\n" +
+"  </" + "script>\n" +
+"</body>\n" +
+"</html>\n";
+      }
+
+      function downloadFile(fileName, content) {
+        var blob = new Blob([content], { type: "text/html;charset=utf-8" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function sanitizeFileName(name) {
+        return (name || "deck")
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "") || "deck";
+      }
+
+      function init() {
+        var state = loadState();
+
+        if (!state.decks.length) {
+          createDeck(state);
+          var first = findDeck(state, currentDeckId);
+          first.title = "Worship Deck";
+          first.markdown = defaultMarkdown();
+          first.updatedAt = nowIso();
+          saveState(state);
+        } else {
+          currentDeckId = state.lastDeckId && findDeck(state, state.lastDeckId)
+            ? state.lastDeckId
+            : state.decks[0].id;
+        }
+
+        renderDeckList(state);
+        renderEditor(state);
+        renderProjectPicker();
+
+        switchProjectBtn.addEventListener("click", function () {
+          var typed = sanitizeProjectKey(newProjectInput.value || "");
+          var selected = sanitizeProjectKey(projectSelect.value || "");
+          var target = typed || selected || "main";
+          window.location.href = buildProjectUrl(target);
+        });
+
+        newProjectInput.addEventListener("keydown", function (event) {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            switchProjectBtn.click();
+          }
+        });
+
+        document.getElementById("newDeckBtn").addEventListener("click", function () {
+          createDeck(state);
+          setFlash("New deck created.", false);
+        });
+
+        document.getElementById("duplicateDeckBtn").addEventListener("click", function () {
+          if (!ensureDeckSelected(state)) {
+            setFlash("No deck selected.", true);
+            return;
+          }
+          var deck = saveCurrentDeck(state);
+          if (!deck) {
+            return;
+          }
+          createDeck(state, {
+            title: deck.title + " Copy",
+            theme: deck.theme,
+            fontSize: deck.fontSize,
+            markdown: deck.markdown
+          });
+          setFlash("Deck duplicated.", false);
+        });
+
+        document.getElementById("deleteDeckBtn").addEventListener("click", function () {
+          if (!ensureDeckSelected(state)) {
+            setFlash("No deck selected.", true);
+            return;
+          }
+
+          var deck = findDeck(state, currentDeckId);
+          var ok = window.confirm("Delete deck: " + (deck.title || "Untitled Deck") + "?");
+          if (!ok) {
+            return;
+          }
+
+          state.decks = state.decks.filter(function (d) { return d.id !== currentDeckId; });
+          currentDeckId = state.decks[0] ? state.decks[0].id : null;
+          state.lastDeckId = currentDeckId;
+          saveState(state);
+          renderDeckList(state);
+          renderEditor(state);
+          setFlash("Deck deleted.", false);
+        });
+
+        document.getElementById("saveBtn").addEventListener("click", function () {
+          saveCurrentDeck(state);
+        });
+
+        document.getElementById("previewBtn").addEventListener("click", function () {
+          var deck = saveCurrentDeck(state);
+          if (!deck) {
+            return;
+          }
+          previewDeck(deck);
+          setFlash("Preview opened in a new tab.", false);
+        });
+
+        document.getElementById("shareLinkBtn").addEventListener("click", async function () {
+          var deck = saveCurrentDeck(state);
+          if (!deck) {
+            return;
+          }
+
+          var url = window.location.origin + window.location.pathname.replace(/index\.html$/, "") +
+            "slideshow.html?project=" + encodeURIComponent(projectKey) +
+            "&data=" + encodeURIComponent(encodeDeck(deck));
+
+          try {
+            await navigator.clipboard.writeText(url);
+            setFlash("Share link copied.", false);
+          } catch (err) {
+            setFlash("Clipboard blocked. Copy from address bar after opening preview.", true);
+          }
+        });
+
+        document.getElementById("downloadBtn").addEventListener("click", function () {
+          var deck = saveCurrentDeck(state);
+          if (!deck) {
+            return;
+          }
+
+          var html = buildStandaloneHtml(deck);
+          var fileName = projectKey + "--" + sanitizeFileName(deck.title) + ".html";
+          downloadFile(fileName, html);
+          setFlash("Downloaded " + fileName + ".", false);
+        });
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>

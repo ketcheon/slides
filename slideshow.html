@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Deck Slideshow</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+  <link id="themeLink" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/night.css">
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #111;
+    }
+
+    .reveal .slides {
+      font-size: 60px !important;
+      text-align: center;
+    }
+
+    #emptyState {
+      display: none;
+      min-height: 100vh;
+      padding: 24px;
+      color: #eee;
+      font-family: "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div id="emptyState">
+    <div>
+      <h1>No deck found</h1>
+      <p>Open this page from Deck Builder preview, or pass ?data=... in the URL.</p>
+    </div>
+  </div>
+
+  <div class="reveal" id="deckRoot" style="display:none;">
+    <div class="slides">
+      <section data-markdown>
+        <textarea id="deckMarkdown" data-template></textarea>
+      </section>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/markdown/markdown.js"></script>
+  <script>
+    (function () {
+      function decodeDeck(encoded) {
+        try {
+          var json = decodeURIComponent(escape(atob(encoded)));
+          return JSON.parse(json);
+        } catch (err) {
+          return null;
+        }
+      }
+
+      function readDeckFromParams() {
+        var params = new URLSearchParams(window.location.search);
+        var data = params.get("data");
+        if (data) {
+          return decodeDeck(data);
+        }
+
+        return null;
+      }
+
+      function applyDeck(deck) {
+        var markdown = document.getElementById("deckMarkdown");
+        var themeLink = document.getElementById("themeLink");
+        var deckRoot = document.getElementById("deckRoot");
+
+        var title = (deck && deck.title) ? deck.title : "Deck Slideshow";
+        var theme = (deck && deck.theme) ? deck.theme : "night";
+        var fontSize = (deck && Number(deck.fontSize)) ? Number(deck.fontSize) : 60;
+        var text = (deck && deck.markdown) ? deck.markdown : "# Empty deck";
+
+        document.title = title;
+        themeLink.href = "https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/" + theme + ".css";
+        markdown.value = text;
+
+        var slides = document.querySelector(".reveal .slides");
+        slides.style.fontSize = Math.max(24, Math.min(140, fontSize)) + "px";
+
+        deckRoot.style.display = "block";
+
+        Reveal.initialize({
+          plugins: [RevealMarkdown],
+          transition: "fade",
+          center: true,
+          hash: true
+        });
+      }
+
+      var deck = readDeckFromParams();
+      if (!deck) {
+        document.getElementById("emptyState").style.display = "flex";
+        return;
+      }
+
+      applyDeck(deck);
+    })();
+  </script>
+</body>
+</html>
